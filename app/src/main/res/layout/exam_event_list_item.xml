@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/transparent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/event_name"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="Event Name"
+        android:textSize="24sp"
+        android:textColor="@color/buttery_text"
+        android:layout_marginHorizontal="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/event_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hall"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:layout_marginHorizontal="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/event_name"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

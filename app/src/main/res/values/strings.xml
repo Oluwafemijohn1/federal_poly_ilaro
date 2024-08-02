@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Biometric System</string>
+    <string name="item_registration">Registration</string>
+    <string name="item_verification">Verification</string>
+    <string name="item_attendance">Attendance</string>
+    <string name="tv_ready">" "</string>
+    <string name="item_fingerprint">FingerPrint</string>
+    <string name="title_activity_login">MainActivity</string>
+    <string name="admin_login">Admin Login</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="please_input_a_valid_email_address">Please input a valid email address</string>
+    <string name="school_name">The Federal Polytechnic Ilaro</string>
+    <string name="app_title">BIOMETRIC ATTENDANCE APP</string>
+    <string name="password_error_txt">Password cannot be empty</string>
+    <string name="welcome_string">Welcome</string>
+    <string name="register_user_txt">Register User</string>
+    <string name="take_attendance">Take Attendance</string>
+    <string name="view_event">View Event</string>
+    <string name="select_user_for_enrollment">Select user for enrollment</string>
+    <string name="student">Student</string>
+    <string name="staff">Staff</string>
+    <string name="user_registration_txt">User Registration</string>
+    <string name="test_event_title">Event: 100029 - Annual Staff Meeting</string>
+    <string name="staff_file_number">Staff File Number</string>
+    <string name="first_name">First name:</string>
+    <string name="last_name">Last name:</string>
+    <string name="staff_type">Staff type:</string>
+    <string name="department">Department:</string>
+    <string name="level">Level:</string>
+    <string name="fingerprint_verification">Fingerprint Verification</string>
+    <string name="student_file_number">Student Matric No</string>
+    <string name="student_type">Student type:</string>
+</resources>

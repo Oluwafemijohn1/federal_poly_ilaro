@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gate_bg"
+    tools:context=".EventSelectionFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:fitsSystemWindows="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/app_green"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/app_green"
+                app:title="Student Attendance"
+                android:elevation="10dp"
+
+                app:titleTextColor="@color/white"
+                app:layout_constraintTop_toTopOf="parent"
+                app:navigationIcon="@drawable/ic_arrow_back_black_24dp" />
+            <TextView
+                android:id="@+id/lectures_welcome_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="36dp"
+                android:text="Please enter Course Number"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+            <EditText
+                android:id="@+id/lecture_code_et"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/edit_text_bg"
+                android:hint="Course code"
+                android:maxLines="1"
+                android:paddingStart="20dp"
+                app:layout_constraintEnd_toStartOf="@id/check_lecture_code_btn"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lectures_welcome_tv" />
+
+            <Button
+                android:id="@+id/check_lecture_code_btn"
+                android:layout_width="200dp"
+                android:layout_height="70dp"
+                android:layout_marginHorizontal="16dp"
+                android:backgroundTint="#F5BA75"
+                android:text="Load Course"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/lecture_code_et"
+                app:layout_constraintTop_toTopOf="@id/lecture_code_et" />
+
+            <TextView
+                android:id="@+id/course_welcome_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="36dp"
+                android:text=""
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/check_lecture_code_btn" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/lecture_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintTop_toBottomOf="@id/course_welcome_tv"
+                tools:itemCount="5"
+                tools:listitem="@layout/event_list_item" />
+            <TextView
+                android:id="@+id/event_welcome_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="36dp"
+                android:text="Available Events for Staffs"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/lecture_recycler" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/event_div"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="12dp"
+                android:background="@color/white"
+                android:backgroundTint="@color/white"
+                app:dividerColor="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/event_welcome_tv" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/event_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintTop_toBottomOf="@id/event_div"
+                tools:itemCount="5"
+                tools:listitem="@layout/event_list_item" />
+
+
+            <TextView
+                android:id="@+id/exam_welcome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="24dp"
+                android:text="Available Examinations"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/event_recycler" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/exam_div"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="12dp"
+                android:background="@color/white"
+                android:backgroundTint="@color/white"
+                app:dividerColor="@color/white"
+                app:dividerInsetEnd="16dp"
+                app:dividerInsetStart="16dp"
+                app:layout_constraintTop_toBottomOf="@id/exam_welcome" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/exam_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="50dp"
+                app:layout_constraintTop_toBottomOf="@id/exam_div"
+                tools:itemCount="5"
+                tools:listitem="@layout/exam_event_list_item" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

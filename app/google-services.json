@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "262933392849",
+    "project_id": "biometric-system-176e2",
+    "storage_bucket": "biometric-system-176e2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262933392849:android:e63c602646b425ec0684f0",
+        "android_client_info": {
+          "package_name": "com.fpi.biometricsystem"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCv2DF4AXWX8SqOrVx6sxK31nPQ3r_8wJs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

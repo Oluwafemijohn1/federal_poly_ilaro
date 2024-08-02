@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".StudentAttendanceFragment">
+
+    <ImageView
+        android:id="@+id/arrow_back_btn"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:src="@drawable/baseline_arrow_back_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/welcome_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:text="@string/take_attendance"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/event_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:text="Event: 100045 - GNS 101 Lecture"
+        android:textColor="@color/buttery_text"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/welcome_tv" />
+
+
+    <TextView
+        android:id="@+id/fingerprint_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/fingerprint_verification"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/event_title" />
+
+    <View
+        android:id="@+id/fingerprint_iv_bg"
+        android:layout_width="150dp"
+        android:layout_height="190dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/fingerprint_rect_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fingerprint_text"
+        app:layout_goneMarginTop="24dp" />
+
+    <ImageView
+        android:id="@+id/actual_fingerprint_iv"
+        android:layout_width="128dp"
+        android:layout_height="180dp"
+        android:clickable="false"
+        android:src="@drawable/fingerprint"
+        app:layout_constraintBottom_toBottomOf="@id/fingerprint_iv_bg"
+        app:layout_constraintEnd_toEndOf="@+id/fingerprint_iv_bg"
+        app:layout_constraintStart_toStartOf="@+id/fingerprint_iv_bg"
+        app:layout_constraintTop_toTopOf="@+id/fingerprint_iv_bg" />
+
+    <Button
+        android:id="@+id/checkDetailsBtn"
+        android:layout_width="400dp"
+        android:layout_height="70dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="48dp"
+        android:backgroundTint="#F5BA75"
+        android:clickable="false"
+        android:drawableEnd="@drawable/fingerprint_smaller"
+        android:enabled="false"
+        android:text="Check Details"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fingerprint_iv_bg" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

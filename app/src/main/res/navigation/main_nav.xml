@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav.xml"
+    app:startDestination="@id/home_fragment">
+
+    <fragment
+        android:id="@+id/login_fragment"
+        android:name="com.fpi.biometricsystem.LoginFragment"
+        android:label="login_fragment"
+        tools:layout="@layout/login_fragment">
+        <action
+            android:id="@+id/login_to_home"
+            app:destination="@id/home_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/home_fragment"
+        android:name="com.fpi.biometricsystem.HomeFragment"
+        android:label="home_fragment"
+        tools:layout="@layout/home_fragment">
+
+        <action
+            android:id="@+id/to_event_selection_fragment"
+            app:destination="@id/event_selection_fragment" />
+        <action
+            android:id="@+id/to_staffRegistrationFragment"
+            app:destination="@id/staffRegistrationFragment" />
+        <action
+            android:id="@+id/to_studentRegistrationFragment"
+            app:destination="@id/studentRegistrationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/staffAttendanceFragment"
+        android:name="com.fpi.biometricsystem.StaffAttendanceFragment"
+        android:label="attendance_fragment"
+        tools:layout="@layout/staff_attendance_fragment" >
+        <argument
+            android:name="event_details"
+            app:argType="com.fpi.biometricsystem.data.EventInfo" />
+    </fragment>
+    <fragment
+        android:id="@+id/staffRegistrationFragment"
+        android:name="com.fpi.biometricsystem.StaffRegistrationFragment"
+        android:label="staff_registration_fragment"
+        tools:layout="@layout/staff_registration_fragment" />
+
+    <fragment
+        android:id="@+id/studentRegistrationFragment"
+        android:name="com.fpi.biometricsystem.StudentRegistrationFragment"
+        android:label="student_registration_fragment"
+        tools:layout="@layout/student_registration_fragment" />
+    <fragment
+        android:id="@+id/verificationFragment"
+        android:name="com.fpi.biometricsystem.VerificationFragment"
+        android:label="verification_fragment"
+        tools:layout="@layout/verification_fragment" />
+
+    <fragment
+        android:id="@+id/event_selection_fragment"
+        android:name="com.fpi.biometricsystem.EventSelectionFragment"
+        android:label="event_selection_fragment"
+        tools:layout="@layout/event_selection_fragment" >
+        <action
+            android:id="@+id/action_event_selection_fragment_to_staffAttendanceFragment"
+            app:destination="@id/staffAttendanceFragment" />
+        <action
+            android:id="@+id/action_event_selection_fragment_to_studentAttendanceFragment"
+            app:destination="@id/studentAttendanceFragment" />
+
+        <action
+            android:id="@+id/event_to_examination"
+            app:destination="@id/studentExaminationAttendanceFragment" />
+
+        <argument
+            android:name="direction"
+            app:argType="string"
+            android:defaultValue="student" />
+    </fragment>
+    <fragment
+        android:id="@+id/studentAttendanceFragment"
+        android:name="com.fpi.biometricsystem.StudentAttendanceFragment"
+        android:label="StudentAttendanceFragment"
+        tools:layout="@layout/student_attendance_fragment">
+        <argument
+            android:name="lecture_details"
+            app:argType="com.fpi.biometricsystem.data.Lecture" />
+    </fragment>
+    <fragment
+        android:id="@+id/studentExaminationAttendanceFragment"
+        android:name="com.fpi.biometricsystem.StudentExaminationAttendanceFragment"
+        android:label="student_examination_attendance_fragment"
+        tools:layout="@layout/student_examination_attendance_fragment" >
+        <argument
+            android:name="exam"
+            app:argType="com.fpi.biometricsystem.data.ExamEvent" />
+    </fragment>
+</navigation>

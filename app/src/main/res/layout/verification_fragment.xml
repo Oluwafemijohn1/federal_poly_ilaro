@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context="com.fpi.biometricsystem.VerificationFragment">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/white"
+        android:elevation="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_arrow_back_black_24dp"
+        app:title="Verification" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/id_til"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="48dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
+        app:boxCornerRadiusBottomEnd="16dp"
+        app:boxCornerRadiusBottomStart="16dp"
+        app:boxCornerRadiusTopEnd="16dp"
+        app:boxCornerRadiusTopStart="16dp"
+        app:helperText="Please enter your Id number:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/id_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/text_bg"
+            android:hint="ID no"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/checkDetailsBtn"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/text_bg"
+        android:text="Check Details Fingerprint"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/id_til" />
+
+    <TextView
+        android:id="@+id/user_details_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="User Details found"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@id/checkDetailsBtn"
+        app:layout_constraintEnd_toEndOf="@id/checkDetailsBtn"
+        app:layout_constraintTop_toBottomOf="@+id/checkDetailsBtn" />
+    <Button
+        android:id="@+id/captureBtn"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/text_bg"
+        android:text="Capture Fingerprint"
+        android:visibility="gone"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/user_details_txt" />
+
+    <ImageView
+        android:id="@+id/fingerPrintIV"
+        android:layout_width="128dp"
+        android:layout_height="180dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="36dp"
+        android:src="@mipmap/ico_fun4"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/captureBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/captureBtn" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
