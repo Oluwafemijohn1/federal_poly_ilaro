@@ -19,7 +19,7 @@ data class StudentDataInfo(
     @SerializedName("matricnumber")
     val matricnumber: String,
     @SerializedName("student_biometrics")
-    val studentBiometrics: List<StudentBiometric>,
+    val studentBiometrics: List<StudentBiometrics>,
     @SerializedName("updated_at")
     val updatedAt: String,
     @SerializedName("level")
@@ -27,7 +27,7 @@ data class StudentDataInfo(
     @SerializedName("department")
     val department: Dept,
 
-)
+    )
 
 data class Level(
     @SerializedName("level")

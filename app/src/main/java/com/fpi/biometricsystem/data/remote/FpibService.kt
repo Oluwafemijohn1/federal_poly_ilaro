@@ -8,6 +8,8 @@ import com.fpi.biometricsystem.data.Lecture
 import com.fpi.biometricsystem.data.LectureInfo
 import com.fpi.biometricsystem.data.StaffData
 import com.fpi.biometricsystem.data.StudentDataInfo
+import com.fpi.biometricsystem.data.individual.StaffInfoResponse
+import com.fpi.biometricsystem.data.individual.StudentInfoResponse
 import com.fpi.biometricsystem.data.request.ExamAttendanceRequest
 import com.fpi.biometricsystem.data.request.StaffAttendanceRequest
 import com.fpi.biometricsystem.data.request.StaffRegistrationRequest
@@ -67,4 +69,10 @@ interface FpibService {
 
     @PATCH("student")
     suspend fun registerStudent(@Body request: StudentRegistrationRequest) : Response<GenericResponse<Any>>
+    @GET("student/fetch")
+    suspend fun fetchStudentInfo(@Query("matric_number") matric_number: String): Response<GenericResponse<StudentInfoResponse>>
+
+    @GET("staff/fetch")
+    suspend fun fetchStaffInfo(@Query("filenumber") filenumber: String): Response<GenericResponse<StaffInfoResponse>>
+
 }

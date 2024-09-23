@@ -85,9 +85,9 @@ class StudentRegistrationFragment : Fragment() {
                         if (it.messageType == MessageType.ERROR) {
                             requireContext().makeToast(it.message)
                         } else {
-                            finalStudentInfo?.let { info ->
-                                viewModel.updateStudentInfo(info)
-                            }
+//                            finalStudentInfo?.let { info ->
+//                                viewModel.updateStudentInfo(info)
+//                            }
                             showRegistrationDialog(
                                 "Successfully saved to database",
                                 requireContext()

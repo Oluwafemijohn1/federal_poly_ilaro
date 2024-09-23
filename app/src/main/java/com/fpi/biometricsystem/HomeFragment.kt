@@ -43,37 +43,37 @@ class HomeFragment : Fragment(), OnHomeItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        viewModel.getAllUsers()
-        initListeners()
+//        viewModel.getAllUsers()
+//        initListeners()
         requestPermissions()
 //        requireContext().showProgressDialog("Updating Database...", true)
     }
 
-    private fun initListeners() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.studentsUpdateFlow.collect {
-                        binding.studentsNoValue.text = it.size.toString()
-                    }
-                }
-
-                launch {
-                    viewModel.staffUpdateFlow.collect {
-                        binding.staffNoValue.text = it.size.toString()
-                    }
-                }
-                launch {
-                    viewModel.gettingAllUsers.observe(viewLifecycleOwner) { done ->
-                        if (done) {
-                            requireContext().showProgressDialog(on = false)
-//                            requireContext().makeToast("Database updated")
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    private fun initListeners() {
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                launch {
+//                    viewModel.studentsUpdateFlow.collect {
+//                        binding.studentsNoValue.text = it.size.toString()
+//                    }
+//                }
+//
+//                launch {
+//                    viewModel.staffUpdateFlow.collect {
+//                        binding.staffNoValue.text = it.size.toString()
+//                    }
+//                }
+//                launch {
+//                    viewModel.gettingAllUsers.observe(viewLifecycleOwner) { done ->
+//                        if (done) {
+//                            requireContext().showProgressDialog(on = false)
+////                            requireContext().makeToast("Database updated")
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     private fun initViews() {
         with(binding) {
@@ -115,7 +115,7 @@ class HomeFragment : Fragment(), OnHomeItemClickListener {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R ||
             Environment.isExternalStorageManager()
         ) {
-            requireContext().makeToast("Welcome to FPI Biometric system")
+//            requireContext().makeToast("Welcome to FPI Biometric system")
         } else {
             val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
             startActivity(intent)

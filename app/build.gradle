@@ -131,7 +131,7 @@ dependencies {
 
     implementation project(':libFpi')
     implementation project(':libCommon')
-    implementation 'com.leon:lfilepickerlibrary:1.8.0'
+//    implementation 'com.leon:lfilepickerlibrary:1.8.0'
 }
 
 kapt {

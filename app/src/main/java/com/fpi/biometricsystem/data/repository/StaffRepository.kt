@@ -56,6 +56,9 @@ class StaffRepository @Inject constructor(
     suspend fun markStaffAttendance(request: StaffAttendanceRequest) =
         safeApiCall { service.markStaffAttendance(request) }
 
+    suspend fun fetchStaffInfo(fileNo: String) =
+        safeApiCall { service.fetchStaffInfo(fileNo) }
+
     suspend fun registerStaff(request: StaffRegistrationRequest) =
         safeApiCall { service.registerStaff(request) }
 

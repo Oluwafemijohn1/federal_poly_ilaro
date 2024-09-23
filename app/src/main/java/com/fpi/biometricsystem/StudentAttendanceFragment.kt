@@ -7,7 +7,10 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,16 +25,18 @@ import androidx.navigation.fragment.navArgs
 import com.fgtit.device.Constants
 import com.fgtit.device.FPModule
 import com.fgtit.device.ImageUtils
+import com.fpi.biometricsystem.data.individual.StudentInfoResponse
 import com.fpi.biometricsystem.data.local.models.StudentInfo
-import com.fpi.biometricsystem.data.request.StaffAttendanceRequest
 import com.fpi.biometricsystem.data.request.StudentAttendanceRequest
 import com.fpi.biometricsystem.databinding.StudentAttendanceFragmentBinding
 import com.fpi.biometricsystem.utils.EventObserver
 import com.fpi.biometricsystem.utils.MatchIsoTemplateStr
 import com.fpi.biometricsystem.utils.displayDialog
+import com.fpi.biometricsystem.utils.hide
 import com.fpi.biometricsystem.utils.makeToast
 import com.fpi.biometricsystem.utils.replaceIfEmpty
 import com.fpi.biometricsystem.utils.sentenceCase
+import com.fpi.biometricsystem.utils.show
 import com.fpi.biometricsystem.utils.showErrorDialog
 import com.fpi.biometricsystem.utils.showProgressDialog
 import com.fpi.biometricsystem.viewmodels.StudentVerificationViewModel
@@ -51,7 +56,7 @@ class StudentAttendanceFragment : Fragment() {
     private val bmpdata = ByteArray(Constants.RESBMP_SIZE)
     private var bmpsize = 0
     private var commonApi: CommonApi? = null
-    private var allStudentInfo: List<StudentInfo> = emptyList()
+    private var studentInfo: StudentInfoResponse? = null
     private val args : StudentAttendanceFragmentArgs by navArgs()
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,26 +89,45 @@ class StudentAttendanceFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.allStudents.collect {
+                    viewModel.finalResponse.collect {res ->
                         requireContext().showProgressDialog(on = false)
-                        allStudentInfo = it
-                        requireContext().makeToast("Ready")
+//                        displayDialog(
+//                            title = "Attendance Saved",
+//                            message = it.message,
+//                            requireContext()
+//                        )
+                        studentInfo?.firstname?.let { first ->
+                            studentInfo?.lastname?.let { last ->
+                                studentInfo?.matricnumber?.let {
+                                    displayDialog(
+                                        title = "Attendance Saved",
+                                        message = "Name: $first $last \nMatric No: ${studentInfo?.matricnumber} \n ${res.message}",
+                                        requireContext()
+                                    )
+                                }
+                            }
+                        }
                         binding.apply {
-                            checkDetailsBtn.isClickable = true
-                            actualFingerprintIv.isClickable = true
-                            checkDetailsBtn.isEnabled = true
+                            checkDetailsBtn.isClickable = false
+                            actualFingerprintIv.isClickable = false
+                            checkDetailsBtn.isEnabled = false
+                            fingerPrintLayout.hide()
                         }
                     }
                 }
 
                 launch {
-                    viewModel.finalResponse.collect {
+                    viewModel.studentInfoResponse.collect {
                         requireContext().showProgressDialog(on = false)
-                        displayDialog(
-                            title = "Attendance Saved",
-                            message = it.message,
-                            requireContext()
-                        )
+                        studentInfo = it.actualData
+                        Log.d("TAG", "observeMessages: actualData: ${it.actualData}")
+                        requireContext().makeToast("Ready to take finger print")
+                        binding.apply {
+                            checkDetailsBtn.isClickable = true
+                            actualFingerprintIv.isClickable = true
+                            checkDetailsBtn.isEnabled = true
+                            fingerPrintLayout.show()
+                        }
                     }
                 }
 
@@ -149,6 +173,25 @@ class StudentAttendanceFragment : Fragment() {
                     requireContext().makeToast("Busy")
                 }
             }
+            loadDetails.setOnClickListener {
+                val matricNo = inputField.text.toString().trim()
+                viewModel.fetchStudentInfo(matricNo)
+                requireContext().showProgressDialog("Loading...", true)
+            }
+            inputField.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+                }
+
+                override fun afterTextChanged(p0: Editable?) {
+                    if (p0.isNullOrEmpty()){
+                        binding.fingerPrintLayout.hide()
+                    }
+                }
+            })
         }
 
     }
@@ -182,48 +225,45 @@ class StudentAttendanceFragment : Fragment() {
                         if (msg.arg1 == 1) {
                             if (worktype == 0) {
                                 val scores = arrayListOf<Int>()
-                                val matchingScores = arrayListOf<Pair<StudentInfo, Int>>()
                                 matsize = fpm.GetTemplateByGen(matdata)
                                 matstring = Base64.encodeToString(matdata, 0)
-
-                                allStudentInfo.forEach { studentInfo ->
-                                    studentInfo.fingerprint.forEach { fin ->
-                                        refstring = fin
-                                        val score = MatchIsoTemplateStr(matstring, refstring)
+                                studentInfo?.student_biometrics?.forEach { studentBio ->
+                                    studentBio?.data?.let {
+                                        val score = MatchIsoTemplateStr(matstring, studentBio.data)
                                         scores.add(score)
-                                        matchingScores.add(Pair(studentInfo, score))
-                                        println(score)
                                     }
                                 }
+                                for ((index, score) in scores.withIndex()){
+                                    if (score >= 55) {
+                                        val studentAttendanceRequest = StudentAttendanceRequest(
+                                            lectureCode = args.lectureDetails.lectureId,
+                                            studentId = studentInfo!!.id.toString()
+                                        )
+//                                        studentInfo?.firstname?.let { first ->
+//                                            studentInfo?.lastname?.let { last ->
+//                                                studentInfo?.matricnumber?.let {
+//                                                    displayDialog(
+//                                                        title = "Verification Successful",
+//                                                        message = "Name: $first $last \nMatric No: ${studentInfo?.matricnumber}",
+//                                                        requireContext()
+//                                                    )
+//                                                }
+//                                            }
+//                                        }
 
-                                var checkingValue: Pair<StudentInfo?, Int> = Pair(null, 0)
-                                for (item in matchingScores) {
-                                    if (item.second > checkingValue.second) {
-                                        checkingValue = item
+                                        viewModel.markAttendance(
+                                            studentAttendanceRequest
+                                        )
+                                        requireContext().showProgressDialog("Loading...", true)
+                                        break
+                                    } else {
+                                        if (index == scores.lastIndex)
+                                            displayDialog(
+                                                title = "Verification Failed",
+                                                message = "Please try again\n\nscore: ${scores.maxOrNull() ?: 0}",
+                                                requireContext()
+                                            )
                                     }
-                                }
-                                println(checkingValue)
-                                if (checkingValue.second >= 75) {
-                                    val studentAttendanceRequest = StudentAttendanceRequest(
-                                        lectureCode = args.lectureDetails.lectureId,
-                                        studentId = checkingValue.first?.idNo.toString()
-                                    )
-                                    displayDialog(
-                                        title = "Verification Successful",
-                                        message = "Name: ${checkingValue.first?.name}\nMatric No: ${checkingValue.first?.matricNo}",
-                                        requireContext()
-                                    )
-                                    viewModel.markAttendance(
-                                        studentAttendanceRequest
-                                    )
-                                    requireContext().showProgressDialog("Loading...", true)
-
-                                } else {
-                                    displayDialog(
-                                        title = "Verification Failed",
-                                        message = "Please try again\n\nscore: ${checkingValue.second}",
-                                        requireContext()
-                                    )
                                 }
                             }
                         } else {

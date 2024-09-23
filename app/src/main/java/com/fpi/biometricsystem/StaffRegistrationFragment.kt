@@ -86,9 +86,9 @@ class StaffRegistrationFragment : Fragment() {
                             requireContext().makeToast(it.message)
                         } else {
                             // Update database
-                            staffInfo?.let {info->
-                                viewModel.updateStaff(info)
-                            }
+//                            staffInfo?.let {info->
+//                                viewModel.updateStaff(info)
+//                            }
                             showRegistrationDialog(
                                 "Successfully saved to database",
                                 requireContext()

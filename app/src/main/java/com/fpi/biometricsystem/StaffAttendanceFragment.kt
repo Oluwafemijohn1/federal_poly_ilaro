@@ -7,11 +7,15 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -23,15 +27,18 @@ import com.fgtit.device.Constants
 import com.fgtit.device.FPModule
 import com.fgtit.device.ImageUtils
 import com.fpi.biometricsystem.data.MessageType
+import com.fpi.biometricsystem.data.individual.StaffInfoResponse
 import com.fpi.biometricsystem.data.local.models.StaffInfo
 import com.fpi.biometricsystem.data.request.StaffAttendanceRequest
 import com.fpi.biometricsystem.databinding.StaffAttendanceFragmentBinding
 import com.fpi.biometricsystem.utils.EventObserver
 import com.fpi.biometricsystem.utils.MatchIsoTemplateStr
 import com.fpi.biometricsystem.utils.displayDialog
+import com.fpi.biometricsystem.utils.hide
 import com.fpi.biometricsystem.utils.makeToast
 import com.fpi.biometricsystem.utils.replaceIfEmpty
 import com.fpi.biometricsystem.utils.sentenceCase
+import com.fpi.biometricsystem.utils.show
 import com.fpi.biometricsystem.utils.showErrorDialog
 import com.fpi.biometricsystem.utils.showProgressDialog
 import com.fpi.biometricsystem.viewmodels.StaffVerificationViewModel
@@ -51,8 +58,9 @@ class StaffAttendanceFragment : Fragment() {
     private val bmpdata = ByteArray(Constants.RESBMP_SIZE)
     private var bmpsize = 0
     private var commonApi: CommonApi? = null
-    private lateinit var allStaffInfo: List<StaffInfo>
+    private var staffInfo: StaffInfoResponse? = null
     private val args: StaffAttendanceFragmentArgs by navArgs()
+    private var fileNo: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,9 +75,8 @@ class StaffAttendanceFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         initFPM()
-        viewModel.allUsers()
-        requireContext().showProgressDialog("Loading...", true)
         observeMessages()
+        Log.d("TAG", "onViewCreated: ${this.javaClass.simpleName}")
     }
 
     private fun initFPM() {
@@ -84,10 +91,18 @@ class StaffAttendanceFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.allStaffs.collect {
+                    viewModel.staffInfo.observe(viewLifecycleOwner, EventObserver {
                         requireContext().showProgressDialog(on = false)
-                        allStaffInfo = it
-                    }
+                        staffInfo = it?.actualData
+                        Log.d("TAG", "observeMessages: ${it?.actualData}")
+                        requireContext().makeToast("Ready to take finger print")
+                        binding.apply {
+                            checkDetailsBtn.isClickable = true
+                            actualFingerprintIv.isClickable = true
+                            checkDetailsBtn.isEnabled = true
+                            fingerPrintLayout.show()
+                        }
+                    })
                 }
                 launch {
                     viewModel.messageResponseLiveData.observe(viewLifecycleOwner, EventObserver {
@@ -101,13 +116,24 @@ class StaffAttendanceFragment : Fragment() {
                 }
 
                 launch {
-                    viewModel.finalResponse.observe(viewLifecycleOwner, EventObserver {
+                    viewModel.finalResponse.observe(viewLifecycleOwner, EventObserver {res->
                         requireContext().showProgressDialog(on = false)
+//                        displayDialog(
+//                            title = "Attendance Saved",
+//                            message = it?.message.toString(),
+//                            requireContext()
+//                        )
                         displayDialog(
                             title = "Attendance Saved",
-                            message = it?.message.toString(),
+                            message = "Name: ${staffInfo?.firstname} ${staffInfo?.lastname} \n File Number: ${staffInfo?.filenumber} \n${res?.message}",
                             requireContext()
                         )
+                        binding.apply {
+                            checkDetailsBtn.isClickable = false
+                            actualFingerprintIv.isClickable = false
+                            checkDetailsBtn.isEnabled = false
+                            fingerPrintLayout.hide()
+                        }
                     })
                 }
                 launch {
@@ -152,13 +178,31 @@ class StaffAttendanceFragment : Fragment() {
                 }
             }
             checkDetailsBtn.setOnClickListener {
-//                fakeMarkAttendance()
                 if (fpm.GenerateTemplate(1)) {
                     worktype = 0
                 } else {
                     requireContext().makeToast("Busy")
                 }
             }
+            loadStaff.setOnClickListener {
+                val fileNo = staffNo.text.toString().trim()
+                viewModel.fetchStaffInfo(fileNo)
+                requireContext().showProgressDialog("Loading...", true)
+            }
+            staffNo.addTextChangedListener(object : TextWatcher{
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+                }
+
+                override fun afterTextChanged(p0: Editable?) {
+                    if (p0.isNullOrEmpty()){
+                        binding.fingerPrintLayout.hide()
+                    }
+                }
+            })
         }
 
     }
@@ -181,7 +225,14 @@ class StaffAttendanceFragment : Fragment() {
                         }
                     }
 
-                    Constants.FPM_PLACE -> {}
+                    Constants.FPM_PLACE -> {
+                        Log.d("TAG", "handleMessage: Constants.FPM_PLACE worktype: $worktype")
+                        if (worktype == 0) {
+                            requireContext().makeToast("Please place your left thumb")
+                        } else if (worktype == 1) {
+                            requireContext().makeToast("Please place your right thumb")
+                        }
+                    }
 
                     Constants.FPM_LIFT -> {}
 
@@ -189,48 +240,39 @@ class StaffAttendanceFragment : Fragment() {
                         if (msg.arg1 == 1) {
                             if (worktype == 0) {
                                 val scores = arrayListOf<Int>()
-                                val matchingScores = arrayListOf<Pair<StaffInfo, Int>>()
                                 matsize = fpm.GetTemplateByGen(matdata)
                                 matstring = Base64.encodeToString(matdata, 0)
-                                allStaffInfo.forEach { staffInfo ->
-                                    staffInfo.fingerprint.forEach { fin ->
-                                        refstring = fin
-                                        val score = MatchIsoTemplateStr(matstring, refstring)
-                                        scores.add(score)
-                                        matchingScores.add(Pair(staffInfo, score))
-                                        println(score)
+                                Log.d("TAG", "handleMessage: matstring $matstring")
+                                    staffInfo?.staff_biometrics?.forEach { fingerPrint ->
+                                        fingerPrint?.data?.let {
+                                            val score = MatchIsoTemplateStr(matstring, it)
+                                            scores.add(score)
+                                        }
+                                        fileNo = fingerPrint?.staff_id
                                     }
-                                }
 
-                                var checkingValue: Pair<StaffInfo?, Int> = Pair(null, 0)
-                                for (item in matchingScores) {
-                                    if (item.second > checkingValue.second) {
-                                        checkingValue = item
+                                for ((index, score) in scores.withIndex()) {
+                                    if (score >= 55) {
+//                                        displayDialog(
+//                                            title = "Verification Successful",
+//                                            message = "Name: ${staffInfo?.firstname} ${staffInfo?.lastname} \n File Number: ${staffInfo?.filenumber}",
+//                                            requireContext()
+//                                        )
+                                        val staffAttendanceRequest = StaffAttendanceRequest(
+                                            eventId = args.eventDetails.eventNumber,
+                                            staffId = staffInfo?.id.toString()
+                                        )
+                                        viewModel.markAttendance(staffAttendanceRequest)
+                                        requireContext().showProgressDialog("Marking Attendance", true)
+                                        break
+                                    } else {
+                                        if (index == scores.lastIndex)
+                                            displayDialog(
+                                                title = "Verification Failed",
+                                                message = "Please try again\n\nscore: ${scores.maxOrNull() ?: 0}",
+                                                requireContext()
+                                            )
                                     }
-                                }
-                                println(checkingValue)
-
-                                if (checkingValue.second >= 75) {
-                                    displayDialog(
-                                        title = "Verification Successful",
-                                        message = "Name: ${checkingValue.first?.name} \nStaff ID: ${checkingValue.first?.idNo}",
-                                        requireContext()
-                                    )
-                                    val staffAttendanceRequest = StaffAttendanceRequest(
-                                        eventId = args.eventDetails.eventNumber,
-                                        staffId = checkingValue.first?.idNo.toString()
-                                    )
-
-                                    println(staffAttendanceRequest)
-                                    viewModel.markAttendance(staffAttendanceRequest)
-                                    requireContext().showProgressDialog("Marking Attendance", true)
-
-                                } else {
-                                    displayDialog(
-                                        title = "Verification Failed",
-                                        message = "Please try again\n\nscore: ${checkingValue.second}",
-                                        requireContext()
-                                    )
                                 }
                             }
                         } else {
@@ -252,18 +294,6 @@ class StaffAttendanceFragment : Fragment() {
         }
     }
 
-    private fun fakeMarkAttendance() {
-        val staffAttendanceRequest = StaffAttendanceRequest(
-            eventId = args.eventDetails.eventNumber,
-            staffId = "PSS100"
-        )
-
-        println(staffAttendanceRequest)
-        viewModel.markAttendance(staffAttendanceRequest)
-        requireContext().showProgressDialog("Marking Attendance", true)
-
-
-    }
 
     override fun onResume() {
         super.onResume()

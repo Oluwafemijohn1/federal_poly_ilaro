@@ -12,7 +12,6 @@
         android:layout_height="56dp"
         android:background="@color/app_green"
         android:elevation="5dp"
-        app:menu="@menu/menu"
         app:titleTextColor="@color/white"
         android:foregroundTint="@color/white"
         app:layout_constraintStart_toStartOf="parent"

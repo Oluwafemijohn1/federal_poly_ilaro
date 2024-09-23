@@ -9,6 +9,7 @@ import com.fpi.biometricsystem.data.GenericError
 import com.fpi.biometricsystem.data.Message
 import com.fpi.biometricsystem.data.GenericResponse
 import com.fpi.biometricsystem.data.StaffData
+import com.fpi.biometricsystem.data.individual.StaffInfoResponse
 import com.fpi.biometricsystem.data.local.models.StaffInfo
 import com.fpi.biometricsystem.data.local.store.PreferenceStore
 import com.fpi.biometricsystem.data.repository.StaffRepository
@@ -28,6 +29,9 @@ class StaffVerificationViewModel @Inject constructor(
     private val _Generic_response = MutableLiveData<SingleEvent<GenericResponse<Any>?>>()
     val finalResponse: LiveData<SingleEvent<GenericResponse<Any>?>> get() = _Generic_response
 
+    private val _staffInfo = MutableLiveData<SingleEvent<GenericResponse<StaffInfoResponse>?>>()
+    val staffInfo: LiveData<SingleEvent<GenericResponse<StaffInfoResponse>?>> get() = _staffInfo
+
     private val _errorResponse: MutableLiveData<SingleEvent<GenericError?>> = MutableLiveData()
     val errorResponse: LiveData<SingleEvent<GenericError?>> get() = _errorResponse
 
@@ -41,6 +45,18 @@ class StaffVerificationViewModel @Inject constructor(
             val result = staffRepository.markStaffAttendance(request)
             if (result.isSuccessful) {
                 _Generic_response.postValue(SingleEvent(result.data?.body()))
+            } else {
+                val errorBody = result.exception
+                _errorResponse.postValue(SingleEvent(errorBody))
+            }
+        }
+    }
+
+    fun fetchStaffInfo(fileNo: String) {
+        viewModelScope.launch {
+            val result = staffRepository.fetchStaffInfo(fileNo)
+            if (result.isSuccessful) {
+                _staffInfo.postValue(SingleEvent(result.data?.body()))
             } else {
                 val errorBody = result.exception
                 _errorResponse.postValue(SingleEvent(errorBody))

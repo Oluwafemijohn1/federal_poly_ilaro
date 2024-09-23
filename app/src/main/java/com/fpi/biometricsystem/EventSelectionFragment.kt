@@ -23,6 +23,7 @@ import com.fpi.biometricsystem.data.ExamEvent
 import com.fpi.biometricsystem.data.Lecture
 import com.fpi.biometricsystem.databinding.EventSelectionFragmentBinding
 import com.fpi.biometricsystem.utils.EventObserver
+import com.fpi.biometricsystem.utils.hide
 import com.fpi.biometricsystem.utils.makeToast
 import com.fpi.biometricsystem.utils.replaceIfEmpty
 import com.fpi.biometricsystem.utils.sentenceCase
@@ -144,27 +145,27 @@ class EventSelectionFragment : Fragment(), OnItemClickListener, OnItemClickListe
             when (args.direction) {
                 "student" -> {
                     toolbar.title = "Student Attendance"
-                    examDiv.visibility = View.GONE
-                    examRecycler.visibility = View.GONE
-                    examWelcome.visibility = View.GONE
+                    examDiv.hide()
+                    examRecycler.hide()
+                    examWelcome.hide()
 
-                    eventDiv.visibility = View.GONE
-                    eventRecycler.visibility = View.GONE
-                    eventWelcomeTv.visibility = View.GONE
+                    eventDiv.hide()
+                    eventRecycler.hide()
+                    eventWelcomeTv.hide()
                 }
 
                 "staff" -> {
                     toolbar.title = "Staff Attendance"
-                    lectureCodeEt.visibility = View.GONE
-                    lecturesWelcomeTv.visibility = View.GONE
-                    checkLectureCodeBtn.visibility = View.GONE
+                    lectureCodeEt.hide()
+                    lecturesWelcomeTv.hide()
+                    checkLectureCodeBtn.hide()
 
-                    examDiv.visibility = View.GONE
-                    examRecycler.visibility = View.GONE
-                    examWelcome.visibility = View.GONE
+                    examDiv.hide()
+                    examRecycler.hide()
+                    examWelcome.hide()
 
-                    lectureRecycler.visibility = View.GONE
-                    courseWelcomeTv.visibility = View.GONE
+                    lectureRecycler.hide()
+                    courseWelcomeTv.hide()
 
                     viewModel.fetchAllEvents()
                     requireContext().showProgressDialog("Loading...", true)
@@ -172,14 +173,14 @@ class EventSelectionFragment : Fragment(), OnItemClickListener, OnItemClickListe
 
                 "exam" -> {
                     toolbar.title = "Examination Attendance"
-                    lectureCodeEt.visibility = View.GONE
-                    lecturesWelcomeTv.visibility = View.GONE
-                    checkLectureCodeBtn.visibility = View.GONE
-                    lectureRecycler.visibility = View.GONE
-                    courseWelcomeTv.visibility = View.GONE
-                    eventDiv.visibility = View.GONE
-                    eventRecycler.visibility = View.GONE
-                    eventWelcomeTv.visibility = View.GONE
+                    lectureCodeEt.hide()
+                    lecturesWelcomeTv.hide()
+                    checkLectureCodeBtn.hide()
+                    lectureRecycler.hide()
+                    courseWelcomeTv.hide()
+                    eventDiv.hide()
+                    eventRecycler.hide()
+                    eventWelcomeTv.hide()
                     viewModel.fetchAllExaminations()
                     requireContext().showProgressDialog("Loading...", true)
                 }

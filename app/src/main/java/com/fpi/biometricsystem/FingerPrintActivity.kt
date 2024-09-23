@@ -51,6 +51,7 @@ class FingerPrintActivity : AppCompatActivity() {
     private lateinit var tvFpData: TextView
     private lateinit var tvFpType: TextView
     private lateinit var activityFingerprintBinding: ActivityFingerprintBinding
+    private val threshold = 50
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityFingerprintBinding = ActivityFingerprintBinding.inflate(layoutInflater)
@@ -106,15 +107,20 @@ class FingerPrintActivity : AppCompatActivity() {
             FileReader(tf).use { fr ->
                 val chars = CharArray(tf.length().toInt())
                 fr.read(chars)
+
                 val fileContent = chars.toString()
                 val strs = fileContent.split("\r\n".toRegex()).dropLastWhile { it.isEmpty() }
                     .toTypedArray()
                 if (strs.isNotEmpty()) {
                     val result = StringBuffer()
                     for (i in strs.indices) {
-                        val sc = MatchIsoTemplateStr(strs[i], matstring)
-                        Log.d("hello", "MatchIsoTemplateStr sc:" + sc + "index:" + i)
-                        result.append("index: $i   score: $sc\n")
+                        val sc = matchIsoTemplateStr(strs[i], matstring)
+                        Log.d("hello", "MatchIsoTemplateStr score: $sc, index: $i")
+                        if (sc >= threshold) {
+                            result.append("index: $i   Match Successful! score: $sc\n")
+                        } else {
+                            result.append("index: $i   Match Failed. score: $sc\n")
+                        }
                     }
                     showMatchResultDialog(result.toString())
                 }
@@ -185,7 +191,7 @@ class FingerPrintActivity : AppCompatActivity() {
                                 matsize = fpm.GetTemplateByGen(matdata)
                                 matstring = Base64.encodeToString(matdata, 0)
                                 tvFpData.text = matstring
-                                val sc = MatchIsoTemplateStr(refstring, matstring)
+                                val sc = matchIsoTemplateStr(refstring, matstring)
                                 tvFpStatus.text = "Match Result:$sc/" + FPMatch.getInstance()
                                     .MatchTemplate(refdata, matdata).toString()
                                 matchTemplateFromFile(matstring)
@@ -256,10 +262,19 @@ class FingerPrintActivity : AppCompatActivity() {
 //        return 0
     }
 
-    fun MatchIsoTemplateStr(strFeatureA: String?, strFeatureB: String?): Int {
+    fun matchIsoTemplateStr(strFeatureA: String?, strFeatureB: String?): Int {
         val piFeatureA = Base64.decode(strFeatureA, Base64.DEFAULT)
         val piFeatureB = Base64.decode(strFeatureB, Base64.DEFAULT)
-        return MatchIsoTemplateByte(piFeatureA, piFeatureB)
+        val score = MatchIsoTemplateByte(piFeatureA, piFeatureB)  // Get match score
+
+        // Check if the score meets the required match threshold
+        if (score >= threshold) {
+            Log.d("Fingerprint", "Match Successful with score: $score")
+        } else {
+            Log.d("Fingerprint", "Match Failed with score: $score")
+        }
+
+        return score  // You can return the score or handle the result as needed
     }
 
     override fun onDestroy() {

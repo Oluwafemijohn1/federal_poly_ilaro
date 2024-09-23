@@ -53,6 +53,9 @@ class StudentRepository @Inject constructor(
     suspend fun fetchStudent(matricNo: String) =
         safeApiCall { service.fetchStudentDetails(matricNo) }
 
+    suspend fun fetchStudentInfo(matricNo: String) =
+        safeApiCall { service.fetchStudentInfo(matricNo) }
+
     suspend fun registerStudent(request: StudentRegistrationRequest) =
         safeApiCall { service.registerStudent(request) }
 

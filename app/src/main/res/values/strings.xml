@@ -32,4 +32,7 @@
     <string name="fingerprint_verification">Fingerprint Verification</string>
     <string name="student_file_number">Student Matric No</string>
     <string name="student_type">Student type:</string>
+    <string name="load_staff">Load Staff details</string>
+    <string name="student_no">Student No</string>
+    <string name="load_details">Load details</string>
 </resources>

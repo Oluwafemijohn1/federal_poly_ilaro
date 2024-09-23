@@ -1,5 +1,6 @@
 package com.fpi.biometricsystem.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.fpi.biometricsystem.data.GenericError
 import com.fpi.biometricsystem.data.GenericResponse
 import com.fpi.biometricsystem.data.StudentDataInfo
+import com.fpi.biometricsystem.data.individual.StudentInfoResponse
 import com.fpi.biometricsystem.data.local.models.StudentInfo
 import com.fpi.biometricsystem.data.local.store.PreferenceStore
 import com.fpi.biometricsystem.data.repository.StudentRepository
@@ -31,6 +33,9 @@ class StudentVerificationViewModel @Inject constructor(
     private val _Generic_response = MutableLiveData<GenericResponse<Any>>()
     val finalResponse get() = _Generic_response.asFlow()
 
+    private val _studentInfoResponse = MutableLiveData<GenericResponse<StudentInfoResponse>>()
+    val studentInfoResponse get() = _studentInfoResponse.asFlow()
+
     fun allStudents() = viewModelScope.launch { studentRepository.getAllUsers() }
 
     fun markAttendance(request: StudentAttendanceRequest) {
@@ -40,6 +45,21 @@ class StudentVerificationViewModel @Inject constructor(
             println("Issueee: $result")
             if (result.isSuccessful){
                 _Generic_response.postValue(result.data?.body())
+            } else {
+                val errorBody = result.exception
+                _errorResponse.postValue(SingleEvent(errorBody))
+            }
+        }
+    }
+
+    fun fetchStudentInfo(matricNo: String) {
+        viewModelScope.launch {
+            val result = studentRepository.fetchStudentInfo(matricNo)
+            Log.d("TAG", "fetchStudentInfo: result $result")
+            if (result.isSuccessful){
+                _studentInfoResponse.postValue(result.data?.body())
+                Log.d("TAG", "fetchStudentInfo: result.isSuccessful ${result.data?.body()}")
+
             } else {
                 val errorBody = result.exception
                 _errorResponse.postValue(SingleEvent(errorBody))
