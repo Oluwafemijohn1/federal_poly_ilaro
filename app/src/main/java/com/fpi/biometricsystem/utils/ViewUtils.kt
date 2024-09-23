@@ -4,10 +4,8 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.constraintlayout.widget.Group
 import androidx.fragment.app.Fragment

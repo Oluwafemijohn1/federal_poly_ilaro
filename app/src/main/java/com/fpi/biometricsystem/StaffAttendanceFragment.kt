@@ -15,7 +15,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -28,7 +27,6 @@ import com.fgtit.device.FPModule
 import com.fgtit.device.ImageUtils
 import com.fpi.biometricsystem.data.MessageType
 import com.fpi.biometricsystem.data.individual.StaffInfoResponse
-import com.fpi.biometricsystem.data.local.models.StaffInfo
 import com.fpi.biometricsystem.data.request.StaffAttendanceRequest
 import com.fpi.biometricsystem.databinding.StaffAttendanceFragmentBinding
 import com.fpi.biometricsystem.utils.EventObserver

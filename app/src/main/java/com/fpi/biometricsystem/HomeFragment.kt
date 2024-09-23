@@ -12,19 +12,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.fpi.biometricsystem.adapters.HomeMenuListAdapter
 import com.fpi.biometricsystem.adapters.OnHomeItemClickListener
 import com.fpi.biometricsystem.data.HomeItem
 import com.fpi.biometricsystem.databinding.HomeFragmentBinding
-import com.fpi.biometricsystem.utils.makeToast
-import com.fpi.biometricsystem.utils.showProgressDialog
 import com.fpi.biometricsystem.viewmodels.HomeViewModel
-import kotlinx.coroutines.launch
 
 
 class HomeFragment : Fragment(), OnHomeItemClickListener {

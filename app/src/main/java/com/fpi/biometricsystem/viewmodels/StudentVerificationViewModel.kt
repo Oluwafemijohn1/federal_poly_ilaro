@@ -11,7 +11,6 @@ import com.fpi.biometricsystem.data.GenericResponse
 import com.fpi.biometricsystem.data.StudentDataInfo
 import com.fpi.biometricsystem.data.individual.StudentInfoResponse
 import com.fpi.biometricsystem.data.local.models.StudentInfo
-import com.fpi.biometricsystem.data.local.store.PreferenceStore
 import com.fpi.biometricsystem.data.repository.StudentRepository
 import com.fpi.biometricsystem.data.request.ExamAttendanceRequest
 import com.fpi.biometricsystem.data.request.StudentAttendanceRequest

@@ -1,20 +1,11 @@
 package com.fpi.biometricsystem
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.NavHostFragment
 import com.fpi.biometricsystem.databinding.ActivityMainBinding
-import com.fpi.biometricsystem.utils.displayDialog
-import com.fpi.biometricsystem.utils.makeToast
-import com.fpi.biometricsystem.utils.showProgressDialog
 import com.fpi.biometricsystem.viewmodels.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint

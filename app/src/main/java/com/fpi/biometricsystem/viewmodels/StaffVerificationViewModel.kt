@@ -3,15 +3,13 @@ package com.fpi.biometricsystem.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.fpi.biometricsystem.data.GenericError
-import com.fpi.biometricsystem.data.Message
 import com.fpi.biometricsystem.data.GenericResponse
+import com.fpi.biometricsystem.data.Message
 import com.fpi.biometricsystem.data.StaffData
 import com.fpi.biometricsystem.data.individual.StaffInfoResponse
 import com.fpi.biometricsystem.data.local.models.StaffInfo
-import com.fpi.biometricsystem.data.local.store.PreferenceStore
 import com.fpi.biometricsystem.data.repository.StaffRepository
 import com.fpi.biometricsystem.data.request.StaffAttendanceRequest
 import com.fpi.biometricsystem.utils.SingleEvent

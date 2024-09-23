@@ -5,9 +5,8 @@ import com.fpi.biometricsystem.data.AllBiometrics
 import com.fpi.biometricsystem.data.GenericResponse
 import com.fpi.biometricsystem.data.SimpleResponse
 import com.fpi.biometricsystem.data.StaffData
-import com.fpi.biometricsystem.data.local.models.StaffInfo
 import com.fpi.biometricsystem.data.local.StaffDao
-import com.fpi.biometricsystem.data.local.models.StudentInfo
+import com.fpi.biometricsystem.data.local.models.StaffInfo
 import com.fpi.biometricsystem.data.local.models.toStaffInfo
 import com.fpi.biometricsystem.data.local.store.PreferenceStore
 import com.fpi.biometricsystem.data.remote.FpibService

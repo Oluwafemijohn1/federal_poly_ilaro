@@ -26,7 +26,6 @@ import com.fgtit.device.Constants
 import com.fgtit.device.FPModule
 import com.fgtit.device.ImageUtils
 import com.fpi.biometricsystem.data.individual.StudentInfoResponse
-import com.fpi.biometricsystem.data.local.models.StudentInfo
 import com.fpi.biometricsystem.data.request.StudentAttendanceRequest
 import com.fpi.biometricsystem.databinding.StudentAttendanceFragmentBinding
 import com.fpi.biometricsystem.utils.EventObserver
