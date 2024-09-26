@@ -151,7 +151,7 @@ class StaffRegistrationFragment : Fragment() {
                     return@setOnClickListener
                 } else {
                     val bioList =
-                        refStrings.map { refStr -> Biometric(data = refStr, type = "thumb") }
+                        refStrings.filter { it.isNotEmpty() }.map { refStr -> Biometric(data = refStr, type = "thumb") }
                     val staffRegistrationRequest = StaffRegistrationRequest(
                         biometric = bioList,
                         filenumber = filenumber

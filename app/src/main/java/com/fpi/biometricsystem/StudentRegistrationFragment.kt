@@ -147,7 +147,7 @@ class StudentRegistrationFragment : Fragment() {
                     return@setOnClickListener
                 } else {
                     val bioList =
-                        refStrings.map { refStr -> Biometric(data = refStr, type = "thumb") }
+                        refStrings.filter { it.isNotEmpty() }.map { refStr -> Biometric(data = refStr, type = "thumb") }
                     val studentRegReq = StudentRegistrationRequest(
                         biometric = bioList,
                         matricnumber = studentMatricNo.toString()
