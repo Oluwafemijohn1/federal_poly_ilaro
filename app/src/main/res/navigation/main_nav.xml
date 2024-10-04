@@ -94,6 +94,6 @@
         tools:layout="@layout/student_examination_attendance_fragment" >
         <argument
             android:name="exam"
-            app:argType="com.fpi.biometricsystem.data.ExamEvent" />
+            app:argType="com.fpi.biometricsystem.data.individual.ExamStudentInfo" />
     </fragment>
 </navigation>

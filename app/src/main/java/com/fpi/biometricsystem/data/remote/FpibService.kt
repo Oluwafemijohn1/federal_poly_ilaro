@@ -2,12 +2,12 @@ package com.fpi.biometricsystem.data.remote
 
 import com.fpi.biometricsystem.data.AllBiometrics
 import com.fpi.biometricsystem.data.EventInfo
-import com.fpi.biometricsystem.data.ExamEvent
 import com.fpi.biometricsystem.data.GenericResponse
 import com.fpi.biometricsystem.data.Lecture
 import com.fpi.biometricsystem.data.LectureInfo
 import com.fpi.biometricsystem.data.StaffData
 import com.fpi.biometricsystem.data.StudentDataInfo
+import com.fpi.biometricsystem.data.individual.ExamStudentInfo
 import com.fpi.biometricsystem.data.individual.StaffInfoResponse
 import com.fpi.biometricsystem.data.individual.StudentInfoResponse
 import com.fpi.biometricsystem.data.request.ExamAttendanceRequest
@@ -39,8 +39,8 @@ interface FpibService {
     @GET("events")
     suspend fun fetchEvents(): Response<GenericResponse<List<EventInfo>>>
 
-    @GET("exams")
-    suspend fun fetchExams(): Response<GenericResponse<List<ExamEvent>>>
+    @GET("exam/{examNum}")
+    suspend fun fetchExam(@Path("examNum") examNum: String): Response<GenericResponse<ExamStudentInfo>>
 
     @GET("events/{id}")
     suspend fun fetchEventById(@Path("id") id: String): Response<GenericResponse<EventInfo>>

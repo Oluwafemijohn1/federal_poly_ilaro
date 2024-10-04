@@ -21,16 +21,20 @@ import com.fpi.biometricsystem.adapters.OnItemClickListenerLecture
 import com.fpi.biometricsystem.data.EventInfo
 import com.fpi.biometricsystem.data.ExamEvent
 import com.fpi.biometricsystem.data.Lecture
+import com.fpi.biometricsystem.data.individual.ExamStudentInfo
 import com.fpi.biometricsystem.databinding.EventSelectionFragmentBinding
 import com.fpi.biometricsystem.utils.EventObserver
 import com.fpi.biometricsystem.utils.hide
 import com.fpi.biometricsystem.utils.makeToast
 import com.fpi.biometricsystem.utils.replaceIfEmpty
 import com.fpi.biometricsystem.utils.sentenceCase
+import com.fpi.biometricsystem.utils.show
 import com.fpi.biometricsystem.utils.showErrorDialog
 import com.fpi.biometricsystem.utils.showProgressDialog
 import com.fpi.biometricsystem.viewmodels.EventSelectionViewModel
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class EventSelectionFragment : Fragment(), OnItemClickListener, OnItemClickListenerLecture,
     OnExamItemClickListener {
@@ -39,6 +43,7 @@ class EventSelectionFragment : Fragment(), OnItemClickListener, OnItemClickListe
     private val viewModel: EventSelectionViewModel by activityViewModels()
     private lateinit var lecture: Lecture
     private val args: EventSelectionFragmentArgs by navArgs()
+    private var exam: ExamStudentInfo? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -70,11 +75,35 @@ class EventSelectionFragment : Fragment(), OnItemClickListener, OnItemClickListe
                 launch {
                     viewModel.allExams.collect {
                         requireContext().showProgressDialog(on = false)
-                        val exams = it?.actualData ?: emptyList()
-                        val examEventsAdapter =
-                            ExamEventListAdapter(exams, this@EventSelectionFragment)
-                        examEventsAdapter.notifyDataSetChanged()
-                        binding.examRecycler.adapter = examEventsAdapter
+
+                        exam = it?.actualData
+                        binding.apply {
+                            courseCode.text = "Course Code: " + exam?.course_code
+                            courseName.text = "Course Name: " +  exam?.course_name
+                            examNumber.text = "Exam Number: " + exam?.exam_number
+                            duration.text = "Exam Duration: " + exam?.duration
+
+                            val originalFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                            val targetFormat = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault())
+
+                            exam?.exam_date?.let {
+                                val date = originalFormat.parse(it)
+                                val formattedDate = targetFormat.format(date)
+                                examDate.text = "Exam Date: " +formattedDate
+                                examDate.show()
+                            }
+
+
+                            examLayout.show()
+                            courseCode.show()
+                            courseName.show()
+                            examNumber.show()
+                            duration.show()
+                        }
+//                        val examEventsAdapter =
+//                            ExamEventListAdapter(exams, this@EventSelectionFragment)
+//                        examEventsAdapter.notifyDataSetChanged()
+//                        binding.examRecycler.adapter = examEventsAdapter
                     }
                 }
 
@@ -121,10 +150,10 @@ class EventSelectionFragment : Fragment(), OnItemClickListener, OnItemClickListe
                 layoutManager = LinearLayoutManager(requireContext())
             }
 
-            examRecycler.apply {
-                setHasFixedSize(true)
-                layoutManager = LinearLayoutManager(requireContext())
-            }
+//            examRecycler.apply {
+//                setHasFixedSize(true)
+//                layoutManager = LinearLayoutManager(requireContext())
+//            }
 
             lectureRecycler.apply {
                 setHasFixedSize(true)
@@ -132,12 +161,28 @@ class EventSelectionFragment : Fragment(), OnItemClickListener, OnItemClickListe
             }
             checkLectureCodeBtn.setOnClickListener {
                 val lectureCode = lectureCodeEt.text.toString().trim()
+
                 if (lectureCode.isEmpty()) {
                     requireContext().makeToast("Please enter a lecture code")
                     return@setOnClickListener
-                } else {
+                }
+
+                requireContext().showProgressDialog("Loading...", true)
+
+                if (args.direction != "exam") {
                     viewModel.fetchCourseByCode(lectureCode)
-                    requireContext().showProgressDialog("Loading...", true)
+                } else {
+                    viewModel.fetchExamination(lectureCode)
+                }
+            }
+
+            examLayout.setOnClickListener {
+                exam?.let {
+                    findNavController().navigate(
+                        EventSelectionFragmentDirections.eventToExamination(
+                            it
+                        )
+                    )
                 }
             }
 
@@ -146,7 +191,7 @@ class EventSelectionFragment : Fragment(), OnItemClickListener, OnItemClickListe
                 "student" -> {
                     toolbar.title = "Student Attendance"
                     examDiv.hide()
-                    examRecycler.hide()
+//                    examRecycler.hide()
                     examWelcome.hide()
 
                     eventDiv.hide()
@@ -161,7 +206,7 @@ class EventSelectionFragment : Fragment(), OnItemClickListener, OnItemClickListe
                     checkLectureCodeBtn.hide()
 
                     examDiv.hide()
-                    examRecycler.hide()
+//                    examRecycler.hide()
                     examWelcome.hide()
 
                     lectureRecycler.hide()
@@ -173,16 +218,23 @@ class EventSelectionFragment : Fragment(), OnItemClickListener, OnItemClickListe
 
                 "exam" -> {
                     toolbar.title = "Examination Attendance"
-                    lectureCodeEt.hide()
-                    lecturesWelcomeTv.hide()
-                    checkLectureCodeBtn.hide()
+                    lectureCodeEt.show()
+                    lecturesWelcomeTv.show()
+                    lecturesWelcomeTv.text = "Please enter Exam Number"
+                    lectureCodeEt.hint = "Exam number"
+                    checkLectureCodeBtn.show()
+                    examLayout.show()
+                    examDate.hide()
+                    checkLectureCodeBtn.text = "Load Exam number"
                     lectureRecycler.hide()
                     courseWelcomeTv.hide()
                     eventDiv.hide()
                     eventRecycler.hide()
                     eventWelcomeTv.hide()
-                    viewModel.fetchAllExaminations()
-                    requireContext().showProgressDialog("Loading...", true)
+                    courseCode.hide()
+                    courseName.hide()
+                    examNumber.hide()
+                    duration.hide()
                 }
             }
         }
@@ -207,8 +259,8 @@ class EventSelectionFragment : Fragment(), OnItemClickListener, OnItemClickListe
 
     override fun onItemClick(item: ExamEvent) {
         // Examination
-        findNavController().navigate(
-            EventSelectionFragmentDirections.eventToExamination(item)
-        )
+//        findNavController().navigate(
+//            EventSelectionFragmentDirections.eventToExamination(item)
+//        )
     }
 }

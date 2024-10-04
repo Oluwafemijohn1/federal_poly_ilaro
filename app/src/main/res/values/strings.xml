@@ -35,4 +35,5 @@
     <string name="load_staff">Load Staff details</string>
     <string name="student_no">Student No</string>
     <string name="load_details">Load details</string>
+    <string name="examination_details">Examination details</string>
 </resources>

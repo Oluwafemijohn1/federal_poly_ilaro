@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.fpi.biometricsystem.data.EventInfo
-import com.fpi.biometricsystem.data.ExamEvent
 import com.fpi.biometricsystem.data.GenericError
 import com.fpi.biometricsystem.data.GenericResponse
 import com.fpi.biometricsystem.data.Lecture
 import com.fpi.biometricsystem.data.LectureInfo
+import com.fpi.biometricsystem.data.individual.ExamStudentInfo
 import com.fpi.biometricsystem.data.repository.EventRepository
 import com.fpi.biometricsystem.data.repository.LectureRepository
 import com.fpi.biometricsystem.utils.SingleEvent
@@ -25,7 +25,7 @@ class EventSelectionViewModel @Inject constructor(
 ): ViewModel() {
 
     private val _allEvents = MutableLiveData<GenericResponse<List<EventInfo>>?>()
-    private val _allExams = MutableLiveData<GenericResponse<List<ExamEvent>>?>()
+    private val _allExams = MutableLiveData<GenericResponse<ExamStudentInfo>?>()
     val allEvents get() = _allEvents.asFlow()
     val allExams get() = _allExams.asFlow()
 
@@ -63,9 +63,9 @@ class EventSelectionViewModel @Inject constructor(
         }
     }
 
-    fun fetchAllExaminations() {
+    fun fetchExamination(examNum: String) {
         viewModelScope.launch {
-            val exams = eventRepository.fetchAllExams()
+            val exams = eventRepository.fetchExam(examNum)
             println("Examinations: $exams")
             if (exams.isSuccessful) {
                 _allExams.postValue(exams.data?.body())

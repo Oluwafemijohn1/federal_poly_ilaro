@@ -39,6 +39,8 @@ import com.fpi.biometricsystem.utils.showProgressDialog
 import com.fpi.biometricsystem.viewmodels.StudentVerificationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @AndroidEntryPoint
 class StudentExaminationAttendanceFragment : Fragment() {
@@ -86,18 +88,7 @@ class StudentExaminationAttendanceFragment : Fragment() {
     private fun observeMessages() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                launch {
-//                    viewModel.allStudents.collect {
-//                        requireContext().showProgressDialog(on = false)
-//                        allStudentInfo = it
-//                        requireContext().makeToast("Ready")
-//                        binding.apply {
-//                            checkDetailsBtn.isClickable = true
-//                            actualFingerprintIv.isClickable = true
-//                            checkDetailsBtn.isEnabled = true
-//                        }
-//                    }
-//                }
+
 
                 launch {
                     viewModel.studentInfoResponse.collect {
@@ -159,7 +150,13 @@ class StudentExaminationAttendanceFragment : Fragment() {
     private fun initViews() {
         with(binding) {
             val details = args.exam
-            eventTitle.text = "${details.courseName} - ${details.courseCode} \n -${details.examDate}"
+            val originalFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val targetFormat = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault())
+            details.exam_date?.let {
+                val date = originalFormat.parse(it)
+                val formattedDate = targetFormat.format(date)
+                eventTitle.text = "${details?.course_name} - ${details?.course_code} \n -${formattedDate}"
+            }
             arrowBackBtn.setOnClickListener { findNavController().popBackStack() }
             checkDetailsBtn.setOnClickListener {
                 if (fpm.GenerateTemplate(1)) {
@@ -229,10 +226,12 @@ class StudentExaminationAttendanceFragment : Fragment() {
                                 }
                                 for ((index, score) in scores.withIndex()){
                                     if (score >= 55) {
-                                        val studentExaminationAttendanceRequest = ExamAttendanceRequest(
-                                            examNumber = args.exam.examNumber,
-                                            studentId = studentInfo!!.id.toString()
-                                        )
+                                        val studentExaminationAttendanceRequest = args.exam.exam_number?.let {
+                                            ExamAttendanceRequest(
+                                                examNumber = it,
+                                                studentId = studentInfo!!.id.toString()
+                                            )
+                                        }
 //                                        studentInfo?.firstname?.let { first ->
 //                                            studentInfo?.lastname?.let { last ->
 //                                                studentInfo?.matricnumber?.let {
@@ -244,10 +243,10 @@ class StudentExaminationAttendanceFragment : Fragment() {
 //                                                }
 //                                            }
 //                                        }
+                                        studentExaminationAttendanceRequest?.let {
+                                            viewModel.markExaminationAttendance(it)
+                                        }
 
-                                        viewModel.markExaminationAttendance(
-                                            studentExaminationAttendanceRequest
-                                        )
                                         requireContext().showProgressDialog("Loading...", true)
                                         break
                                     } else {

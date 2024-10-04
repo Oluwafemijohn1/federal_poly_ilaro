@@ -16,7 +16,7 @@ class EventRepository @Inject constructor(
     suspend fun insertEvent(event: Event) = eventDao.insert(event)
 
     suspend fun fetchAllEvents() = safeApiCall { service.fetchEvents() }
-    suspend fun fetchAllExams() = safeApiCall { service.fetchExams() }
+    suspend fun fetchExam(examNum: String) = safeApiCall { service.fetchExam(examNum) }
 
     suspend fun fetchEventById(id: String) = service.fetchEventById(id)
 }

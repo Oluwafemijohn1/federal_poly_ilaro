@@ -112,7 +112,8 @@
                 android:background="@color/white"
                 android:backgroundTint="@color/white"
                 app:dividerColor="@color/white"
-                app:layout_constraintTop_toBottomOf="@id/event_welcome_tv" />
+                app:layout_constraintTop_toBottomOf="@id/event_welcome_tv"
+                tools:layout_editor_absoluteX="24dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/event_recycler"
@@ -130,7 +131,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
                 android:layout_marginTop="24dp"
-                android:text="Available Examinations"
+                android:text="@string/examination_details"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -149,15 +150,92 @@
                 app:dividerInsetStart="16dp"
                 app:layout_constraintTop_toBottomOf="@id/exam_welcome" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/exam_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="50dp"
-                app:layout_constraintTop_toBottomOf="@id/exam_div"
-                tools:itemCount="5"
-                tools:listitem="@layout/exam_event_list_item" />
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/exam_recycler"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_marginTop="24dp"-->
+<!--                android:layout_marginBottom="50dp"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/exam_div"-->
+<!--                tools:itemCount="5"-->
+<!--                tools:listitem="@layout/exam_event_list_item" />-->
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/exam_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:layout_marginTop="10dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@+id/exam_div"
+                app:layout_constraintStart_toStartOf="@+id/exam_div"
+                app:layout_constraintTop_toBottomOf="@+id/exam_div">
+
+                <TextView
+                    android:id="@+id/course_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginHorizontal="24dp"
+                    android:text="Event Name"
+                    android:visibility="gone"
+                    android:textColor="@color/buttery_text"
+                    android:textSize="24sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/exam_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="24dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Hall"
+                    android:visibility="gone"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/course_name" />
+                <TextView
+                    android:id="@+id/course_code"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="24dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Hall"
+                    android:visibility="gone"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/exam_number" />
+                <TextView
+                    android:id="@+id/duration"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="24dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Hall"
+                    android:visibility="gone"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/course_code" />
+
+                <TextView
+                    android:id="@+id/exam_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="24dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Hall"
+                    android:visibility="gone"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/duration" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
