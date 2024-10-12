@@ -1,11 +1,17 @@
 package com.fpi.biometricsystem.viewmodels
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
+import com.fpi.biometricsystem.data.BaseUrlResponse
+import com.fpi.biometricsystem.data.GenericError
+import com.fpi.biometricsystem.data.GenericResponse
 import com.fpi.biometricsystem.data.local.store.PreferenceStore
 import com.fpi.biometricsystem.data.repository.StaffRepository
 import com.fpi.biometricsystem.data.repository.StudentRepository
+import com.fpi.biometricsystem.utils.SingleEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,16 +23,23 @@ class HomeViewModel @Inject constructor(
     private val pref: PreferenceStore,
 ) : ViewModel() {
     private val _gettingAllUsers = MutableLiveData(false)
-    val gettingAllUsers get() = _gettingAllUsers
-    val studentsUpdateFlow = studentRepository.allStudentsUpdateFlow()
-    val staffUpdateFlow = staffRepository.allStaffUpdateFlow()
 
-    fun getAllUsers() {
+
+    private val _baseUrl = MutableLiveData<GenericResponse<BaseUrlResponse>?>()
+    val baseUrl get() = _baseUrl.asFlow()
+    private val _errorResponse: MutableLiveData<SingleEvent<GenericError?>> = MutableLiveData()
+    val errorResponse: LiveData<SingleEvent<GenericError?>> get() = _errorResponse
+
+
+    fun fetchBaseUrl() {
         viewModelScope.launch {
-            staffRepository.getAllUsers()
-            studentRepository.getAllUsers()
-        }.invokeOnCompletion {
-            _gettingAllUsers.value = true
+            val urlData = staffRepository.fetchBaseUrl()
+            if (urlData.isSuccessful) {
+                _baseUrl.postValue(urlData.data?.body())
+            } else {
+                val errorBody = urlData.exception
+                _errorResponse.postValue(SingleEvent(errorBody))
+            }
         }
     }
 

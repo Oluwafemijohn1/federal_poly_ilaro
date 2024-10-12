@@ -1,6 +1,7 @@
 package com.fpi.biometricsystem.data.remote
 
 import com.fpi.biometricsystem.data.AllBiometrics
+import com.fpi.biometricsystem.data.BaseUrlResponse
 import com.fpi.biometricsystem.data.EventInfo
 import com.fpi.biometricsystem.data.GenericResponse
 import com.fpi.biometricsystem.data.Lecture
@@ -47,6 +48,8 @@ interface FpibService {
 
     @GET("events")
     suspend fun fetchLectures(): Response<GenericResponse<List<LectureInfo>>>
+    @GET("settings/base_url")
+    suspend fun fetchBaseUrl(): Response<GenericResponse<BaseUrlResponse>>
 
     @GET("course/lecture")
     suspend fun fetchCourseById(@Query("lectureid") id: String): Response<GenericResponse<List<Lecture>>>

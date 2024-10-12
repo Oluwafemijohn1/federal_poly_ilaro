@@ -10,20 +10,37 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.fpi.biometricsystem.adapters.HomeMenuListAdapter
 import com.fpi.biometricsystem.adapters.OnHomeItemClickListener
 import com.fpi.biometricsystem.data.HomeItem
+import com.fpi.biometricsystem.data.local.store.PreferenceStore
 import com.fpi.biometricsystem.databinding.HomeFragmentBinding
+import com.fpi.biometricsystem.utils.EventObserver
+import com.fpi.biometricsystem.utils.replaceIfEmpty
+import com.fpi.biometricsystem.utils.sentenceCase
+import com.fpi.biometricsystem.utils.showErrorDialog
+import com.fpi.biometricsystem.utils.showProgressDialog
 import com.fpi.biometricsystem.viewmodels.HomeViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class HomeFragment : Fragment(), OnHomeItemClickListener {
     private lateinit var binding: HomeFragmentBinding
     private val viewModel: HomeViewModel by activityViewModels()
+    @Inject
+    lateinit var preferenceStore: PreferenceStore
+    private var showUrlToast: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,36 +55,39 @@ class HomeFragment : Fragment(), OnHomeItemClickListener {
         super.onViewCreated(view, savedInstanceState)
         initViews()
 //        viewModel.getAllUsers()
-//        initListeners()
+        viewModel.fetchBaseUrl()
+        requireContext().showProgressDialog(on = true)
+        initListeners()
         requestPermissions()
+        val url = preferenceStore.baseUrl
 //        requireContext().showProgressDialog("Updating Database...", true)
     }
 
-//    private fun initListeners() {
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                launch {
-//                    viewModel.studentsUpdateFlow.collect {
-//                        binding.studentsNoValue.text = it.size.toString()
-//                    }
-//                }
-//
-//                launch {
-//                    viewModel.staffUpdateFlow.collect {
-//                        binding.staffNoValue.text = it.size.toString()
-//                    }
-//                }
-//                launch {
-//                    viewModel.gettingAllUsers.observe(viewLifecycleOwner) { done ->
-//                        if (done) {
-//                            requireContext().showProgressDialog(on = false)
-////                            requireContext().makeToast("Database updated")
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
+    private fun initListeners() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    requireContext().showProgressDialog(on = false)
+                    viewModel.baseUrl.collect{
+                        it?.actualData?.value?.let { url ->
+                            preferenceStore.baseUrl = url
+                            if (showUrlToast) {
+                                showErrorDialog("Base Url is updated.", requireContext(), title = "Successful")
+                                showUrlToast = false
+                            }
+                        }
+                    }
+                }
+                launch {
+                    viewModel.errorResponse.observe(viewLifecycleOwner, EventObserver {
+                        requireContext().showProgressDialog(on = false)
+                        showErrorDialog(it?.message.replaceIfEmpty("Something went wrong").sentenceCase(), requireContext())
+                        showUrlToast = false
+                    })
+                }
+            }
+        }
+    }
 
     private fun initViews() {
         with(binding) {
@@ -77,6 +97,7 @@ class HomeFragment : Fragment(), OnHomeItemClickListener {
                 HomeItem(title = "Student\nAttendance", resId = 2),
                 HomeItem(title = "Staff\nAttendance", resId = 3),
                 HomeItem(title = "Examination\nAttendance", resId = 4),
+                HomeItem(title = "Change\n Url", resId = 5),
 //                HomeItem(title = "Info", resId = 5),
             )
 
@@ -176,7 +197,10 @@ class HomeFragment : Fragment(), OnHomeItemClickListener {
                 )
             )
 
-            5 -> findNavController().navigate(HomeFragmentDirections.toEventSelectionFragment())
+            5 -> {
+                viewModel.fetchBaseUrl()
+                showUrlToast = true
+            }
         }
     }
 }

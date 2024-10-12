@@ -26,17 +26,19 @@ class StaffRepository @Inject constructor(
     suspend fun getAllUsers(lastVisitedPage: Int = lastVisitedPages): SimpleResponse<GenericResponse<AllBiometrics<StaffData>>> {
         return safeApiCall { service.getAllStaff(lastVisitedPage) }.also {
 
-            if (it.isSuccessful) {
-                saveStaffDetails(it.body.actualData)
-                preferenceStore.lastVisitedPageStaffs = lastVisitedPage
-                if (it.body.actualData.currentPage < it.body.actualData.pagesCount && it.body.actualData.actualData.isNotEmpty()) {
-                    getAllUsers(it.body.actualData.currentPage + 1)
-                }
-            } else {
-                // Pass a message to the front
-            }
+//            if (it.isSuccessful) {
+//                saveStaffDetails(it.body.actualData)
+//                preferenceStore.lastVisitedPageStaffs = lastVisitedPage
+//                if (it.body.actualData.currentPage < it.body.actualData.pagesCount && it.body.actualData.actualData.isNotEmpty()) {
+//                    getAllUsers(it.body.actualData.currentPage + 1)
+//                }
+//            } else {
+//                // Pass a message to the front
+//            }
         }
     }
+
+    suspend fun fetchBaseUrl() = safeApiCall { service.fetchBaseUrl() }
 
     private suspend fun saveStaffDetails(allBiometrics: AllBiometrics<StaffData>) {
         val staffsInfo = allBiometrics.actualData.map { it.toStaffInfo() }

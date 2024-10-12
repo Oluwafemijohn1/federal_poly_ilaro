@@ -29,9 +29,9 @@ fun Context.showProgressDialog(message: String = "", on: Boolean) {
     }
 }
 
-fun showErrorDialog(message: String, context: Context) {
+fun showErrorDialog(message: String, context: Context, title: String = "Error") {
     val builder = AlertDialog.Builder(context)
-    builder.setTitle("Error")
+    builder.setTitle(title)
     builder.setMessage(message)
     builder.setCancelable(false)
     builder.setNegativeButton("ok") { dialog, which -> dialog.dismiss() }

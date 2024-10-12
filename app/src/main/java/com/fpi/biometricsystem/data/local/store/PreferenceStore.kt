@@ -34,6 +34,12 @@ class PreferenceStore @Inject constructor(
             sharedPreferences.edit().putInt(PrefKey.LAST_VISITED_PAGE_STAFFS, value).apply()
         }
 
+    var baseUrl: String?
+        get() = sharedPreferences.getString(PrefKey.BASE_URL, null)
+        set(value) {
+            sharedPreferences.edit().putString(PrefKey.BASE_URL, value).apply()
+        }
+
     fun clearUserData() {
         lastVisitedPageStudents = 1
         lastVisitedPageStaffs = 1
@@ -44,4 +50,5 @@ internal object PrefKey {
     const val LAST_VISITED_PAGE_STUDENTS = "last_visited_page_students"
     const val LAST_VISITED_PAGE_STAFFS = "last_visited_page_staffs"
     const val SCHEMA_VERSION = "schema_version"
+    const val BASE_URL = "base_url"
 }
