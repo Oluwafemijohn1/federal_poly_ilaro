@@ -1,6 +1,7 @@
 package com.fpi.biometricsystem.data.local.store
 
 import android.content.SharedPreferences
+import com.fpi.biometricsystem.utils.Constants
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -35,7 +36,7 @@ class PreferenceStore @Inject constructor(
         }
 
     var baseUrl: String?
-        get() = sharedPreferences.getString(PrefKey.BASE_URL, null)
+        get() = sharedPreferences.getString(PrefKey.BASE_URL, Constants.REMOTE)
         set(value) {
             sharedPreferences.edit().putString(PrefKey.BASE_URL, value).apply()
         }

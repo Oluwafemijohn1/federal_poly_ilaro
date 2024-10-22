@@ -7,10 +7,10 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -23,6 +23,7 @@ import com.fpi.biometricsystem.adapters.OnHomeItemClickListener
 import com.fpi.biometricsystem.data.HomeItem
 import com.fpi.biometricsystem.data.local.store.PreferenceStore
 import com.fpi.biometricsystem.databinding.HomeFragmentBinding
+import com.fpi.biometricsystem.utils.Constants
 import com.fpi.biometricsystem.utils.EventObserver
 import com.fpi.biometricsystem.utils.replaceIfEmpty
 import com.fpi.biometricsystem.utils.sentenceCase
@@ -40,7 +41,8 @@ class HomeFragment : Fragment(), OnHomeItemClickListener {
     private val viewModel: HomeViewModel by activityViewModels()
     @Inject
     lateinit var preferenceStore: PreferenceStore
-    private var showUrlToast: Boolean = false
+    private var isRemote: Boolean = false
+    private var urlSource: String = Constants.REMOTE
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,15 +55,29 @@ class HomeFragment : Fragment(), OnHomeItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initViews()
+        preferenceStore.baseUrl?.let {
+            initViews(itemList(it))
+        }
 //        viewModel.getAllUsers()
-        viewModel.fetchBaseUrl()
-        requireContext().showProgressDialog(on = true)
+//        viewModel.fetchBaseUrl()
+//        requireContext().showProgressDialog(on = true)
         initListeners()
         requestPermissions()
         val url = preferenceStore.baseUrl
 //        requireContext().showProgressDialog("Updating Database...", true)
     }
+
+    private fun itemList(urlSource: String): List<HomeItem>{
+        return listOf(
+            HomeItem(title = "Student\nRegistration", resId = 0),
+            HomeItem(title = "Staff\nRegistration", resId = 1),
+            HomeItem(title = "Student\nAttendance", resId = 2),
+            HomeItem(title = "Staff\nAttendance", resId = 3),
+            HomeItem(title = "Examination\nAttendance", resId = 4),
+            HomeItem(title = urlSource, resId = 5),
+        )
+    }
+
 
     private fun initListeners() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -69,12 +85,24 @@ class HomeFragment : Fragment(), OnHomeItemClickListener {
                 launch {
                     requireContext().showProgressDialog(on = false)
                     viewModel.baseUrl.collect{
-                        it?.actualData?.value?.let { url ->
+                        it?.actualData?.let { url ->
+                            initViews(itemList(url))
+//                            Log.d("TAG", "initListeners: data $url")
                             preferenceStore.baseUrl = url
-                            if (showUrlToast) {
-                                showErrorDialog("Base Url is updated.", requireContext(), title = "Successful")
-                                showUrlToast = false
-                            }
+//                            if (showUrlToast) {
+//                                showErrorDialog("Base Url is updated. \n The new base url is: $url", requireContext(), title = "Successful")
+//                                showUrlToast = false
+//                            }
+                        }
+                    }
+                }
+
+                launch {
+                    requireContext().showProgressDialog(on = false)
+                    viewModel.baseUrl.collect{
+                        it?.actualData?.let { url ->
+                            initViews(itemList(url))
+                            preferenceStore.baseUrl = url
                         }
                     }
                 }
@@ -82,28 +110,17 @@ class HomeFragment : Fragment(), OnHomeItemClickListener {
                     viewModel.errorResponse.observe(viewLifecycleOwner, EventObserver {
                         requireContext().showProgressDialog(on = false)
                         showErrorDialog(it?.message.replaceIfEmpty("Something went wrong").sentenceCase(), requireContext())
-                        showUrlToast = false
                     })
                 }
             }
         }
     }
 
-    private fun initViews() {
+    private fun initViews(list: List<HomeItem>) {
         with(binding) {
-            val menuItemList: List<HomeItem> = listOf(
-                HomeItem(title = "Student\nRegistration", resId = 0),
-                HomeItem(title = "Staff\nRegistration", resId = 1),
-                HomeItem(title = "Student\nAttendance", resId = 2),
-                HomeItem(title = "Staff\nAttendance", resId = 3),
-                HomeItem(title = "Examination\nAttendance", resId = 4),
-                HomeItem(title = "Change\n Url", resId = 5),
-//                HomeItem(title = "Info", resId = 5),
-            )
-
             val gridLayoutManager =
                 GridLayoutManager(requireContext(), 2, GridLayoutManager.VERTICAL, false)
-            val homeAdapter = HomeMenuListAdapter(menuItemList, this@HomeFragment)
+            val homeAdapter = HomeMenuListAdapter(list, this@HomeFragment)
             homeItemsRecycler.apply {
                 layoutManager = gridLayoutManager
                 adapter = homeAdapter
@@ -198,8 +215,8 @@ class HomeFragment : Fragment(), OnHomeItemClickListener {
             )
 
             5 -> {
-                viewModel.fetchBaseUrl()
-                showUrlToast = true
+                viewModel.fetchBaseUrl(if (preferenceStore.baseUrl == Constants.LOCAL) Constants.REMOTE else Constants.LOCAL)
+//                viewModel.fetchBaseUrl()
             }
         }
     }

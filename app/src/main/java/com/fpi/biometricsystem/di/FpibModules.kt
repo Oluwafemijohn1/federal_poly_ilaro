@@ -32,7 +32,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object FpibModules {
-    private const val baseUrl = Constants.BASE_URL
+//    private const val baseUrl = Constants.BASE_URL
     private const val DATA_STORE = Constants.FPIB_STORE
 
 
@@ -74,43 +74,6 @@ object FpibModules {
 
     @Singleton
     @Provides
-    fun provideRetrofit(
-        okHttpClient: OkHttpClient,
-        gson: Gson,
-        sharedPreferences: SharedPreferences
-    ): Retrofit  {
-//        var url = sharedPreferences.getString(PrefKey.BASE_URL, null)
-//        url = url?.let { if (it.endsWith("/")) it else "$it/" } ?: baseUrl
-//        Log.d("TAG", "provideRetrofit: url: $url")
-        return Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .baseUrl(baseUrl)  // Ensure non-null
-            .client(okHttpClient)
-            .build()
-    }
-
-    @Singleton
-    @Provides
-    fun provideGson(): Gson = GsonBuilder()
-        .setLenient()
-        .create();
-    @Singleton
-    @Provides
-    fun providesOkHttpClient(
-        httpLoggingInterceptor: HttpLoggingInterceptor,
-        sharedPreferences: SharedPreferences
-    ): OkHttpClient =
-        OkHttpClient.Builder()
-            .connectTimeout(120, TimeUnit.SECONDS) // Increase the timeout for connection
-            .readTimeout(120, TimeUnit.SECONDS) // Increase the timeout for reading response
-            .writeTimeout(120, TimeUnit.SECONDS)
-            .addInterceptor(httpLoggingInterceptor)
-            .addNetworkInterceptor(getHeaderInterceptor(sharedPreferences))
-            .build()
-
-
-    @Singleton
-    @Provides
     fun providesHttpLoggingInterceptor() = HttpLoggingInterceptor()
         .apply {
             level = HttpLoggingInterceptor.Level.BODY
@@ -122,59 +85,56 @@ object FpibModules {
         retrofit.create(FpibService::class.java)
 
 
-    private fun getHeaderInterceptor(sharedPreferences: SharedPreferences): Interceptor {
-        return Interceptor { chain ->
-            val originalRequest = chain.request()
-            val originalHttpUrl = originalRequest.url
 
-            // Build the initial request with headers
-            val requestBuilder = originalRequest.newBuilder()
-                .header("accesskey", "YTpWVb573X2vtgkbC7RsCo8DGfYgiR")
-                .header("content-type", "application/json")
-                .header("accept", "application/json")
-            // Create a new URL only if needed and ensure it retains the same host and port
-            val newHttpUrl = if (!originalHttpUrl.encodedPath.contains("settings/base_url")) {
-                // If the path does NOT contain "settings/base_url", change the base URL
-                val newBaseUrl = sharedPreferences.getString(PrefKey.BASE_URL, null)
-                    ?.let { if (it.endsWith("/")) it else "$it/" }
-                    ?: baseUrl // Fallback to the default base URL
+    @Singleton
+    @Provides
+    fun provideGson(): Gson = GsonBuilder()
+        .setLenient()
+        .create();
 
-                // Update the original request URL to the new base URL while keeping the same path and query
-                updateBaseUrl(originalHttpUrl, newBaseUrl)
-            } else {
-                // If the path contains "settings/base_url", retain the original URL
-                originalHttpUrl
+    @Singleton
+    @Provides
+    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson, sharedPreferences: SharedPreferences): Retrofit {
+        var baseUrl = Constants.BASE_URL
+        baseUrl = sharedPreferences.getString(PrefKey.BASE_URL, null)
+            ?.let {
+                Log.d("TAG", "provideRetrofit getHeaderInterceptor let: $it")
+                if (it == Constants.LOCAL) "http://192.168.7.181:8080/api/" else Constants.BASE_URL
             }
-
-            // Proceed with the new request
-            val newRequest = requestBuilder.url(newHttpUrl!!).build()
-            Log.d("API_CALL", "Modified request URL: ${newRequest.url}")
-            return@Interceptor chain.proceed(newRequest)
-        }
+            ?: kotlin.run {
+                Log.d("TAG", "provideRetrofit getHeaderInterceptor run")
+                baseUrl
+            }
+        return Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .baseUrl(baseUrl)
+            .client(okHttpClient)
+            .build()
     }
 
-    // Function to update the base URL
-    private fun updateBaseUrl(originalHttpUrl: HttpUrl, baseUrl: String): HttpUrl? {
-        val parsedNewBaseUrl = baseUrl.toHttpUrlOrNull()
-        return parsedNewBaseUrl?.let { newBaseUrl ->
-            originalHttpUrl.newBuilder()
-                .scheme(newBaseUrl.scheme)  // Update scheme (http/https)
-                .host(newBaseUrl.host)      // Update host
-                .port(newBaseUrl.port)      // Update port
-                .build()
+    @Singleton
+    @Provides
+    fun providesOkHttpClient(
+        httpLoggingInterceptor: HttpLoggingInterceptor
+    ): OkHttpClient =
+        OkHttpClient.Builder()
+            .connectTimeout(120, TimeUnit.SECONDS) // Increase the timeout for connection
+            .readTimeout(120, TimeUnit.SECONDS) // Increase the timeout for reading response
+            .writeTimeout(120, TimeUnit.SECONDS)
+            .addInterceptor(httpLoggingInterceptor)
+            .addNetworkInterceptor(getHeaderInterceptor())
+            .build()
+
+    private fun getHeaderInterceptor(): Interceptor {
+        return Interceptor { chain ->
+            val request =
+                chain.request().newBuilder()
+                    .header("accesskey", "YTpWVb573X2vtgkbC7RsCo8DGfYgiR")
+                    .header("content-type", "application/json")
+                    .header("accept", "application/json")
+                    .build()
+            chain.proceed(request)
         }
     }
-
-//    private fun getHeaderInterceptor(sharedPreferences: SharedPreferences): Interceptor {
-//        return Interceptor { chain ->
-//            val request =
-//                chain.request().newBuilder()
-//                    .header("accesskey", "YTpWVb573X2vtgkbC7RsCo8DGfYgiR")
-//                    .header("content-type", "application/json")
-//                    .header("accept", "application/json")
-//                    .build()
-//            chain.proceed(request)
-//        }
-//    }
 
 }

@@ -1,5 +1,6 @@
 package com.fpi.biometricsystem.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,8 +10,10 @@ import com.fpi.biometricsystem.data.BaseUrlResponse
 import com.fpi.biometricsystem.data.GenericError
 import com.fpi.biometricsystem.data.GenericResponse
 import com.fpi.biometricsystem.data.local.store.PreferenceStore
+import com.fpi.biometricsystem.data.remote.Department
 import com.fpi.biometricsystem.data.repository.StaffRepository
 import com.fpi.biometricsystem.data.repository.StudentRepository
+import com.fpi.biometricsystem.utils.Constants
 import com.fpi.biometricsystem.utils.SingleEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -25,20 +28,24 @@ class HomeViewModel @Inject constructor(
     private val _gettingAllUsers = MutableLiveData(false)
 
 
-    private val _baseUrl = MutableLiveData<GenericResponse<BaseUrlResponse>?>()
+    private val _baseUrl = MutableLiveData<GenericResponse<String>?>()
     val baseUrl get() = _baseUrl.asFlow()
     private val _errorResponse: MutableLiveData<SingleEvent<GenericError?>> = MutableLiveData()
     val errorResponse: LiveData<SingleEvent<GenericError?>> get() = _errorResponse
 
+//    private val _url = MutableLiveData<GenericResponse<String>?>()
+//    val url get() = _url.asFlow()
 
+    fun fetchBaseUrl(source: String) {
+        viewModelScope.launch {
+            _baseUrl.postValue(GenericResponse(actualData= source, message = ""))
+        }
+    }
     fun fetchBaseUrl() {
         viewModelScope.launch {
-            val urlData = staffRepository.fetchBaseUrl()
-            if (urlData.isSuccessful) {
-                _baseUrl.postValue(urlData.data?.body())
-            } else {
-                val errorBody = urlData.exception
-                _errorResponse.postValue(SingleEvent(errorBody))
+            val dep  = staffRepository.fetchBaseUrl()
+            if(dep.isSuccessful) {
+                Log.d("TAG", "fetchBaseUrl body: ${dep.body} ")
             }
         }
     }

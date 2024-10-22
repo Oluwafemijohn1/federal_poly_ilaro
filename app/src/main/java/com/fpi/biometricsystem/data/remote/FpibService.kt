@@ -48,9 +48,11 @@ interface FpibService {
 
     @GET("events")
     suspend fun fetchLectures(): Response<GenericResponse<List<LectureInfo>>>
-    @GET("settings/base_url")
-    suspend fun fetchBaseUrl(): Response<GenericResponse<BaseUrlResponse>>
+//    @GET("settings/base_url")
+//    suspend fun fetchBaseUrl(): Response<GenericResponse<BaseUrlResponse>>
 
+    @GET("departments")
+    suspend fun fetchBaseUrl(): Response<GenericResponse<Department>>
     @GET("course/lecture")
     suspend fun fetchCourseById(@Query("lectureid") id: String): Response<GenericResponse<List<Lecture>>>
 
